@@ -23,114 +23,118 @@ class _RegisterPageState extends State<RegisterPage> {
       backgroundColor: const Color(0xFF0F011E),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
 
-              /// TITLE
+              /// LOGO / TITLE
               const Text(
                 "Create Account",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 34,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
                   color: Color(0xFF9D4EDD),
                 ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
 
               const Text(
-                "Welcome to Vytal 🌱",
+                "Start your health journey with Vytal 🌱",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 15,
                   color: Colors.white70,
                 ),
               ),
 
               const SizedBox(height: 40),
 
-              /// NAME
-              _inputField(
-                controller: nameController,
-                hint: "Full Name",
-                icon: Icons.person_outline,
-                keyboardType: TextInputType.text,
-              ),
-
-              const SizedBox(height: 16),
-
-              /// AGE
-              _inputField(
-                controller: ageController,
-                hint: "Age",
-                icon: Icons.cake_outlined,
-                keyboardType: TextInputType.number,
-              ),
-
-              const SizedBox(height: 16),
-
-              /// GENDER
-              DropdownButtonFormField<String>(
-                dropdownColor: const Color(0xFF1E1E2C),
-                value: selectedGender,
-                decoration: InputDecoration(
-                  hintText: "Gender",
-                  hintStyle: const TextStyle(color: Colors.white54),
-                  filled: true,
-                  fillColor: const Color(0xFF1E1E2C),
-                  prefixIcon:
-                      const Icon(Icons.people_outline, color: Colors.white54),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
+              /// FORM CARD
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF151528),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-                style: const TextStyle(color: Colors.white),
-                items: const [
-                  DropdownMenuItem(
-                      value: 'Male', child: Text('Male')),
-                  DropdownMenuItem(
-                      value: 'Female', child: Text('Female')),
-                  DropdownMenuItem(
-                      value: 'Other', child: Text('Other')),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    selectedGender = value;
-                  });
-                },
+                child: Column(
+                  children: [
+                    _inputField(
+                      controller: nameController,
+                      hint: "Full Name",
+                      icon: Icons.person_outline,
+                      keyboardType: TextInputType.text,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _inputField(
+                      controller: ageController,
+                      hint: "Age",
+                      icon: Icons.cake_outlined,
+                      keyboardType: TextInputType.number,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    /// GENDER DROPDOWN
+                    DropdownButtonFormField<String>(
+                      value: selectedGender,
+                      dropdownColor: const Color(0xFF1E1E2C),
+                      iconEnabledColor: Colors.white70,
+                      decoration: _inputDecoration(
+                        hint: "Gender",
+                        icon: Icons.people_outline,
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      items: const [
+                        DropdownMenuItem(value: 'Male', child: Text('Male')),
+                        DropdownMenuItem(value: 'Female', child: Text('Female')),
+                        DropdownMenuItem(value: 'Other', child: Text('Other')),
+                      ],
+                      onChanged: (value) {
+                        setState(() => selectedGender = value);
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _inputField(
+                      controller: emailController,
+                      hint: "Email Address",
+                      icon: Icons.email_outlined,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _inputField(
+                      controller: passwordController,
+                      hint: "Password",
+                      icon: Icons.lock_outline,
+                      keyboardType: TextInputType.text,
+                      obscure: true,
+                    ),
+                  ],
+                ),
               ),
 
-              const SizedBox(height: 16),
-
-              /// EMAIL
-              _inputField(
-                controller: emailController,
-                hint: "Email",
-                icon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-              ),
-
-              const SizedBox(height: 16),
-
-              /// PASSWORD
-              _inputField(
-                controller: passwordController,
-                hint: "Password",
-                icon: Icons.lock_outline,
-                keyboardType: TextInputType.text,
-                obscure: true,
-              ),
-
-              const SizedBox(height: 30),
+              const SizedBox(height: 32),
 
               /// REGISTER BUTTON
               Container(
-                height: 52,
+                height: 54,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
@@ -138,7 +142,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       Color(0xFFE100FF),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: ElevatedButton(
                   onPressed: _register,
@@ -146,22 +150,23 @@ class _RegisterPageState extends State<RegisterPage> {
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   child: const Text(
-                    "Register",
+                    "Create Account",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
-              /// BACK TO LOGIN
+              /// LOGIN REDIRECT
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -206,12 +211,9 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    /// SUCCESS → HOME PAGE
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => const HomePage(),
-      ),
+      MaterialPageRoute(builder: (_) => const HomePage()),
     );
   }
 
@@ -224,7 +226,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  /// INPUT FIELD WIDGET
+  /// INPUT FIELD
   Widget _inputField({
     required TextEditingController controller,
     required String hint,
@@ -237,16 +239,23 @@ class _RegisterPageState extends State<RegisterPage> {
       keyboardType: keyboardType,
       obscureText: obscure,
       style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white54),
-        prefixIcon: Icon(icon, color: Colors.white54),
-        filled: true,
-        fillColor: const Color(0xFF1E1E2C),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
+      decoration: _inputDecoration(hint: hint, icon: icon),
+    );
+  }
+
+  InputDecoration _inputDecoration({
+    required String hint,
+    required IconData icon,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.white54),
+      prefixIcon: Icon(icon, color: Colors.white54),
+      filled: true,
+      fillColor: const Color(0xFF1E1E2C),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
       ),
     );
   }

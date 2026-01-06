@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 
 class ImpactQuestionPage extends StatefulWidget {
-  final String symptom;
+  final List<String> symptoms;
 
-  const ImpactQuestionPage({super.key, required this.symptom});
+  const ImpactQuestionPage({
+    super.key,
+    required this.symptoms,
+  });
 
   @override
   State<ImpactQuestionPage> createState() => _ImpactQuestionPageState();
 }
 
 class _ImpactQuestionPageState extends State<ImpactQuestionPage> {
-  double impact = 0;
+  final Map<String, int> intensityMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    for (var symptom in widget.symptoms) {
+      intensityMap[symptom] = 3; // default intensity
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,93 +31,76 @@ class _ImpactQuestionPageState extends State<ImpactQuestionPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: const BackButton(color: Colors.white),
-        actions: [
-          TextButton(
-            onPressed: () {},
-            child: const Text("Skip", style: TextStyle(color: Colors.white70)),
-          )
-        ],
+        title: const Text(
+          "Symptom Intensity",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const LinearProgressIndicator(
-              value: 0.25,
-              backgroundColor: Colors.white12,
-              color: Color(0xFF9D4EDD),
-            ),
-            const SizedBox(height: 20),
-
-            const Text(
-              "During the past day",
-              style: TextStyle(color: Colors.white54),
-            ),
-            const SizedBox(height: 8),
-
-            const Text(
-              "What was the impact on daily functioning?",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: 40),
-
-            /// CARD
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E1E2C),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    widget.symptom,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
+            Expanded(
+              child: ListView(
+                children: widget.symptoms.map((symptom) {
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E1E2C),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          symptom,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
 
-                  Slider(
-                    value: impact,
-                    min: 0,
-                    max: 10,
-                    divisions: 10,
-                    label: impact.round().toString(),
-                    activeColor: const Color(0xFF9D4EDD),
-                    onChanged: (value) {
-                      setState(() {
-                        impact = value;
-                      });
-                    },
-                  ),
+                        const SizedBox(height: 10),
 
-                  Text(
-                    impact == 0
-                        ? "No impact"
-                        : "Impact level: ${impact.round()}",
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ],
+                        Slider(
+                          value: intensityMap[symptom]!.toDouble(),
+                          min: 1,
+                          max: 5,
+                          divisions: 4,
+                          activeColor: const Color(0xFF9D4EDD),
+                          inactiveColor: Colors.white24,
+                          label: intensityMap[symptom].toString(),
+                          onChanged: (value) {
+                            setState(() {
+                              intensityMap[symptom] = value.toInt();
+                            });
+                          },
+                        ),
+
+                        Text(
+                          "Intensity: ${intensityMap[symptom]} / 5",
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
               ),
             ),
 
-            const Spacer(),
-
-            /// NEXT
+            /// SUBMIT
             SizedBox(
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                  // Next question (2/4)
+                  // You now have:
+                  // symptom -> intensity mapping
+                  print(intensityMap);
+
+                  Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF9D4EDD),
@@ -115,7 +109,7 @@ class _ImpactQuestionPageState extends State<ImpactQuestionPage> {
                   ),
                 ),
                 child: const Text(
-                  "Next",
+                  "Continue",
                   style: TextStyle(fontSize: 18),
                 ),
               ),

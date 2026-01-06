@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
+import 'change_password_page.dart';
 
 class ProfileSettingsPage extends StatelessWidget {
   const ProfileSettingsPage({super.key});
@@ -10,31 +11,35 @@ class ProfileSettingsPage extends StatelessWidget {
       backgroundColor: const Color(0xFF0F011E),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F011E),
+        elevation: 0,
         title: const Text("Settings"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-
             _settingsTile(
-              icon: Icons.person,
+              icon: Icons.person_outline,
               title: "Edit Profile",
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProfilePage()),
+                  MaterialPageRoute(
+                    builder: (_) => const ProfilePage(),
+                  ),
                 );
               },
             ),
 
             _settingsTile(
-              icon: Icons.lock,
+              icon: Icons.lock_outline,
               title: "Change Password",
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProfilePage()),
+                  MaterialPageRoute(
+                    builder: (_) => const ChangePasswordPage(),
+                  ),
                 );
               },
             ),
@@ -53,6 +58,7 @@ class ProfileSettingsPage extends StatelessWidget {
     );
   }
 
+  /// SETTINGS TILE
   Widget _settingsTile({
     required IconData icon,
     required String title,
@@ -76,6 +82,7 @@ class ProfileSettingsPage extends StatelessWidget {
           style: TextStyle(
             color: isDestructive ? Colors.redAccent : Colors.white,
             fontSize: 16,
+            fontWeight: FontWeight.w500,
           ),
         ),
         trailing: const Icon(

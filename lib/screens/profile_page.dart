@@ -8,10 +8,18 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final _nameController = TextEditingController(text: "Shambhavi Sinha");
-  final _emailController = TextEditingController(text: "shambhavi@email.com");
-  final _oldPasswordController = TextEditingController();
-  final _newPasswordController = TextEditingController();
+  final TextEditingController nameController =
+      TextEditingController(text: "John Doe"); // previous name
+  final TextEditingController emailController =
+      TextEditingController(text: "johndoe@example.com"); // previous email
+  final TextEditingController heightController =
+      TextEditingController(text: "170"); // previous height
+  final TextEditingController weightController =
+      TextEditingController(text: "65"); // previous weight
+  final TextEditingController dobController =
+      TextEditingController(text: "01/01/2000"); // previous DOB
+
+  String? selectedGender = "Male"; // previous gender
 
   @override
   Widget build(BuildContext context) {
@@ -19,83 +27,110 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: const Color(0xFF0F011E),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F011E),
-        elevation: 0,
-        title: const Text("Profile"),
+        title: const Text("Edit Profile"),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-
-            /// PROFILE AVATAR
-            const CircleAvatar(
-              radius: 45,
-              backgroundColor: Color(0xFF9D4EDD),
-              child: Icon(Icons.person, size: 45, color: Colors.white),
+            _inputField(
+              controller: nameController,
+              hint: "Full Name",
+              icon: Icons.person_outline,
+              keyboardType: TextInputType.name,
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
-            const Text(
-              "Shambhavi Sinha",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
+            _inputField(
+              controller: emailController,
+              hint: "Email",
+              icon: Icons.email_outlined,
+              keyboardType: TextInputType.emailAddress,
+            ),
+
+            const SizedBox(height: 16),
+
+            _inputField(
+              controller: heightController,
+              hint: "Height (cm)",
+              icon: Icons.height,
+              keyboardType: TextInputType.number,
+            ),
+
+            const SizedBox(height: 16),
+
+            _inputField(
+              controller: weightController,
+              hint: "Weight (kg)",
+              icon: Icons.monitor_weight_outlined,
+              keyboardType: TextInputType.number,
+            ),
+
+            const SizedBox(height: 16),
+
+            /// DOB PICKER
+            TextField(
+              controller: dobController,
+              readOnly: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: _inputDecoration(
+                hint: "Date of Birth",
+                icon: Icons.cake_outlined,
               ),
+              onTap: _pickDate,
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
-            /// PERSONAL INFO
-            _sectionTitle("Personal Information"),
-            _inputField("Full Name", _nameController),
-            _inputField("Email", _emailController),
-
-            const SizedBox(height: 20),
-
-            /// CHANGE PASSWORD
-            _sectionTitle("Change Password"),
-            _inputField(
-              "Current Password",
-              _oldPasswordController,
-              isPassword: true,
+            /// GENDER
+            DropdownButtonFormField<String>(
+              value: selectedGender,
+              dropdownColor: const Color(0xFF1E1E2C),
+              iconEnabledColor: Colors.white70,
+              decoration: _inputDecoration(
+                hint: "Gender",
+                icon: Icons.people_outline,
+              ),
+              style: const TextStyle(color: Colors.white),
+              items: const [
+                DropdownMenuItem(value: 'Male', child: Text('Male')),
+                DropdownMenuItem(value: 'Female', child: Text('Female')),
+                DropdownMenuItem(value: 'Other', child: Text('Other')),
+              ],
+              onChanged: (value) {
+                setState(() => selectedGender = value);
+              },
             ),
-            _inputField(
-              "New Password",
-              _newPasswordController,
-              isPassword: true,
-            ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 32),
 
             /// SAVE BUTTON
-            SizedBox(
+            Container(
               width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF9D4EDD),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+              height: 54,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF7F00FF),
+                    Color(0xFFE100FF),
+                  ],
                 ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: ElevatedButton(
                 onPressed: _saveProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                ),
                 child: const Text(
                   "Save Changes",
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            /// LOGOUT
-            TextButton(
-              onPressed: _logout,
-              child: const Text(
-                "Logout",
-                style: TextStyle(color: Colors.redAccent),
               ),
             ),
           ],
@@ -104,60 +139,69 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  /// INPUT FIELD
-  Widget _inputField(
-    String label,
-    TextEditingController controller, {
-    bool isPassword = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: TextField(
-        controller: controller,
-        obscureText: isPassword,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Colors.white54),
-          filled: true,
-          fillColor: const Color(0xFF1E1E2C),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
-          ),
-        ),
-      ),
+  /// DATE PICKER
+  Future<void> _pickDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.tryParse(dobController.text.split("/").reversed.join("-")) ?? DateTime(2000),
+      firstDate: DateTime(1950),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark(),
+          child: child!,
+        );
+      },
     );
+
+    if (picked != null) {
+      setState(() {
+        dobController.text =
+            "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+      });
+    }
   }
 
-  /// SECTION TITLE
-  Widget _sectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// SAVE PROFILE
   void _saveProfile() {
-    // TODO: connect to backend / Firebase
+    // Here you can also save to database / API
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Profile updated successfully")),
+      const SnackBar(
+        content: Text("Profile updated successfully"),
+        backgroundColor: Colors.green,
+      ),
+    );
+    Navigator.pop(context);
+  }
+
+  /// INPUT FIELD
+  Widget _inputField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    required TextInputType keyboardType,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      style: const TextStyle(color: Colors.white),
+      decoration: _inputDecoration(hint: hint, icon: icon),
     );
   }
 
-  /// LOGOUT
-  void _logout() {
-    Navigator.pop(context);
+  InputDecoration _inputDecoration({
+    required String hint,
+    required IconData icon,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.white54),
+      prefixIcon: Icon(icon, color: Colors.white54),
+      filled: true,
+      fillColor: const Color(0xFF1E1E2C),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
+      ),
+    );
   }
 }

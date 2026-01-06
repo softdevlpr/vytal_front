@@ -1,4 +1,4 @@
-# my_first_app
+# vytal_app
 
 A new Flutter project.
 
