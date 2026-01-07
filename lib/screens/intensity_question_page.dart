@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'recommendation_screen.dart';
 
-class ImpactQuestionPage extends StatefulWidget {
+class IntensityQuestionPage extends StatefulWidget {
   final List<String> symptoms;
 
-  const ImpactQuestionPage({
-    super.key,
-    required this.symptoms,
-  });
+  const IntensityQuestionPage({super.key, required this.symptoms});
 
   @override
-  State<ImpactQuestionPage> createState() => _ImpactQuestionPageState();
+  State<IntensityQuestionPage> createState() => _IntensityQuestionPageState();
 }
 
-class _ImpactQuestionPageState extends State<ImpactQuestionPage> {
+class _IntensityQuestionPageState extends State<IntensityQuestionPage> {
   final Map<String, int> intensityMap = {};
 
   @override
@@ -90,17 +88,29 @@ class _ImpactQuestionPageState extends State<ImpactQuestionPage> {
               ),
             ),
 
-            /// SUBMIT
+            /// CONTINUE → RECOMMENDATION PAGE
             SizedBox(
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                  // You now have:
-                  // symptom -> intensity mapping
-                  print(intensityMap);
+                  final List<Map<String, dynamic>> symptomsWithIntensity =
+                      intensityMap.entries.map((entry) {
+                        return {
+                          "symptomId": entry.key,
+                          "intensity": entry.value,
+                        };
+                      }).toList();
 
-                  Navigator.pop(context);
+                  print(symptomsWithIntensity); // debug
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          RecommendationScreen(symptoms: symptomsWithIntensity),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF9D4EDD),
@@ -108,10 +118,7 @@ class _ImpactQuestionPageState extends State<ImpactQuestionPage> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  "Continue",
-                  style: TextStyle(fontSize: 18),
-                ),
+                child: const Text("Continue", style: TextStyle(fontSize: 18)),
               ),
             ),
           ],

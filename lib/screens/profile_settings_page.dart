@@ -3,7 +3,14 @@ import 'profile_page.dart';
 import 'change_password_page.dart';
 
 class ProfileSettingsPage extends StatelessWidget {
-  const ProfileSettingsPage({super.key});
+  final String userName;
+  final String email;
+
+  const ProfileSettingsPage({
+    super.key,
+    required this.userName,
+    required this.email,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +18,6 @@ class ProfileSettingsPage extends StatelessWidget {
       backgroundColor: const Color(0xFF0F011E),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F011E),
-        elevation: 0,
         title: const Text("Settings"),
       ),
       body: Padding(
@@ -25,7 +31,7 @@ class ProfileSettingsPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const ProfilePage(),
+                    builder: (_) => ProfilePage(name: userName, email: email),
                   ),
                 );
               },
@@ -37,9 +43,7 @@ class ProfileSettingsPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const ChangePasswordPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const ChangePasswordPage()),
                 );
               },
             ),
@@ -58,7 +62,6 @@ class ProfileSettingsPage extends StatelessWidget {
     );
   }
 
-  /// SETTINGS TILE
   Widget _settingsTile({
     required IconData icon,
     required String title,

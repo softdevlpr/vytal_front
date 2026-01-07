@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final String name;
+  final String email;
+
+  const ProfilePage({super.key, required this.name, required this.email});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final TextEditingController nameController =
-      TextEditingController(text: "John Doe"); // previous name
-  final TextEditingController emailController =
-      TextEditingController(text: "johndoe@example.com"); // previous email
-  final TextEditingController heightController =
-      TextEditingController(text: "170"); // previous height
-  final TextEditingController weightController =
-      TextEditingController(text: "65"); // previous weight
-  final TextEditingController dobController =
-      TextEditingController(text: "01/01/2000"); // previous DOB
+  late TextEditingController nameController;
+  late TextEditingController emailController;
+  final TextEditingController heightController = TextEditingController();
+  final TextEditingController weightController = TextEditingController();
+  final TextEditingController dobController = TextEditingController();
 
-  String? selectedGender = "Male"; // previous gender
+  String? selectedGender;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ Populate with logged-in user data
+    nameController = TextEditingController(text: widget.name);
+    emailController = TextEditingController(text: widget.email);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +76,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
             const SizedBox(height: 16),
 
-            /// DOB PICKER
             TextField(
               controller: dobController,
               readOnly: true,
@@ -83,7 +89,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
             const SizedBox(height: 16),
 
-            /// GENDER
             DropdownButtonFormField<String>(
               value: selectedGender,
               dropdownColor: const Color(0xFF1E1E2C),
@@ -105,16 +110,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
             const SizedBox(height: 32),
 
-            /// SAVE BUTTON
             Container(
               width: double.infinity,
               height: 54,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF7F00FF),
-                    Color(0xFFE100FF),
-                  ],
+                  colors: [Color(0xFF7F00FF), Color(0xFFE100FF)],
                 ),
                 borderRadius: BorderRadius.circular(16),
               ),
@@ -126,10 +127,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 child: const Text(
                   "Save Changes",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -139,31 +137,22 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  /// DATE PICKER
   Future<void> _pickDate() async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.tryParse(dobController.text.split("/").reversed.join("-")) ?? DateTime(2000),
+      initialDate: DateTime(2000),
       firstDate: DateTime(1950),
       lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.dark(),
-          child: child!,
-        );
-      },
+      builder: (context, child) => Theme(data: ThemeData.dark(), child: child!),
     );
 
     if (picked != null) {
-      setState(() {
-        dobController.text =
-            "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
-      });
+      dobController.text =
+          "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
     }
   }
 
   void _saveProfile() {
-    // Here you can also save to database / API
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text("Profile updated successfully"),
@@ -173,7 +162,6 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.pop(context);
   }
 
-  /// INPUT FIELD
   Widget _inputField({
     required TextEditingController controller,
     required String hint,

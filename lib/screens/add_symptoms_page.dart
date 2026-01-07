@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'impact_question_page.dart';
+import 'intensity_question_page.dart';
 
 class AddSymptomsPage extends StatefulWidget {
   const AddSymptomsPage({super.key});
@@ -16,10 +16,10 @@ class _AddSymptomsPageState extends State<AddSymptomsPage> {
     "Headache",
     "Migraine",
     "Sore Throat",
-    "Cough",
+    "Cough (Wet / Dry)",
     "Sneezing",
     "Shortness of Breath",
-    "Chest Pain",
+    "Chest Pain / Tightness",
     "Chest Congestion",
     "Palpitations",
     "Dizziness / Fainting",
@@ -30,12 +30,12 @@ class _AddSymptomsPageState extends State<AddSymptomsPage> {
     "Blurred Vision",
     "Eye Pain",
     "Swelling (Face / Throat)",
-    "Nausea / Vomiting",
+    "Nausea",
     "Abdominal Pain",
     "Bloating",
     "Diarrhea",
     "Constipation",
-    "Heartburn / Reflux",
+    "Heartburn",
     "Painful Urination",
     "Frequent Urination",
     "Blood in Urine",
@@ -60,7 +60,7 @@ class _AddSymptomsPageState extends State<AddSymptomsPage> {
     "Sore Throat",
     "Shortness of Breath",
     "Muscle Ache",
-    "Nausea / Vomiting"
+    "Nausea / Vomiting",
   ];
 
   final Set<String> selectedSymptoms = {};
@@ -78,7 +78,7 @@ class _AddSymptomsPageState extends State<AddSymptomsPage> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text("Skip", style: TextStyle(color: Colors.white70)),
-          )
+          ),
         ],
       ),
       body: Padding(
@@ -118,15 +118,17 @@ class _AddSymptomsPageState extends State<AddSymptomsPage> {
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 16,
+                ),
               ),
               style: const TextStyle(color: Colors.white),
               items: allSymptoms
-                  .map((symptom) => DropdownMenuItem(
-                        value: symptom,
-                        child: Text(symptom),
-                      ))
+                  .map(
+                    (symptom) =>
+                        DropdownMenuItem(value: symptom, child: Text(symptom)),
+                  )
                   .toList(),
               onChanged: (value) {
                 if (value != null && !selectedSymptoms.contains(value)) {
@@ -145,17 +147,19 @@ class _AddSymptomsPageState extends State<AddSymptomsPage> {
               spacing: 10,
               runSpacing: 10,
               children: selectedSymptoms
-                  .map((symptom) => Chip(
-                        label: Text(symptom),
-                        backgroundColor: const Color(0xFF9D4EDD),
-                        labelStyle: const TextStyle(color: Colors.white),
-                        deleteIconColor: Colors.white,
-                        onDeleted: () {
-                          setState(() {
-                            selectedSymptoms.remove(symptom);
-                          });
-                        },
-                      ))
+                  .map(
+                    (symptom) => Chip(
+                      label: Text(symptom),
+                      backgroundColor: const Color(0xFF9D4EDD),
+                      labelStyle: const TextStyle(color: Colors.white),
+                      deleteIconColor: Colors.white,
+                      onDeleted: () {
+                        setState(() {
+                          selectedSymptoms.remove(symptom);
+                        });
+                      },
+                    ),
+                  )
                   .toList(),
             ),
 
@@ -187,11 +191,14 @@ class _AddSymptomsPageState extends State<AddSymptomsPage> {
                     });
                   },
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                      color:
-                          isSelected ? const Color(0xFF9D4EDD) : const Color(0xFF1E1E2C),
+                      color: isSelected
+                          ? const Color(0xFF9D4EDD)
+                          : const Color(0xFF1E1E2C),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isSelected ? Colors.white : Colors.white38,
@@ -222,7 +229,7 @@ class _AddSymptomsPageState extends State<AddSymptomsPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => ImpactQuestionPage(
+                            builder: (_) => IntensityQuestionPage(
                               symptoms: selectedSymptoms.toList(),
                             ),
                           ),
@@ -234,10 +241,7 @@ class _AddSymptomsPageState extends State<AddSymptomsPage> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  "Next",
-                  style: TextStyle(fontSize: 18),
-                ),
+                child: const Text("Next", style: TextStyle(fontSize: 18)),
               ),
             ),
           ],
