@@ -12,6 +12,7 @@ class RecommendationScreen extends StatefulWidget {
 
 class _RecommendationScreenState extends State<RecommendationScreen> {
   bool isLoading = true;
+
   List causes = [];
   List tests = [];
 
@@ -49,51 +50,91 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.purple))
-          : (causes.isEmpty && tests.isEmpty)
-          ? const Center(
-              child: Text(
-                "No recommendations available for the selected symptoms.",
-                style: TextStyle(color: Colors.white70),
-              ),
-            )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  sectionTitle("🚨 Possible Causes"),
-                  ...causes.map(
-                    (c) => infoCard(
-                      title: c["name"] ?? "Possible Cause",
-                      description:
-                          (c["description"]?.toString().isNotEmpty ?? false)
-                          ? c["description"]
-                          : "Consult a doctor for detailed evaluation.",
-                      icon: Icons.warning_amber_rounded,
-                    ),
-                  ),
-
+                  ...buildSymptomWiseSections(),
                   const SizedBox(height: 24),
-
-                  sectionTitle("🧪 Recommended Tests"),
-                  ...tests.map(
-                    (t) => infoCard(
-                      title: t["name"] ?? "Medical Test",
-                      description:
-                          (t["purpose"]?.toString().isNotEmpty ?? false)
-                          ? t["purpose"]
-                          : "Recommended based on your symptoms.",
-                      icon: Icons.science,
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
                   disclaimerCard(),
                 ],
               ),
             ),
     );
+  }
+
+  /// 🔹 BUILD UI PER SYMPTOM (NO UNKNOWN)
+  List<Widget> buildSymptomWiseSections() {
+    final int symptomCount = widget.symptoms.length;
+
+    // Split causes & tests roughly per symptom
+    final int causesPerSymptom = symptomCount == 0
+        ? 0
+        : (causes.length / symptomCount).ceil();
+    final int testsPerSymptom = symptomCount == 0
+        ? 0
+        : (tests.length / symptomCount).ceil();
+
+    return List.generate(symptomCount, (index) {
+      final symptomName = widget.symptoms[index]["symptomId"];
+
+      final symptomCauses = causes
+          .skip(index * causesPerSymptom)
+          .take(causesPerSymptom)
+          .toList();
+
+      final symptomTests = tests
+          .skip(index * testsPerSymptom)
+          .take(testsPerSymptom)
+          .toList();
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// SYMPTOM HEADING
+          Text(
+            "🩺 $symptomName",
+            style: const TextStyle(
+              color: Colors.purpleAccent,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          if (symptomCauses.isNotEmpty) ...[
+            sectionTitle("🚨 Possible Causes"),
+            ...symptomCauses.map(
+              (c) => infoCard(
+                title: c["name"] ?? "Possible Cause",
+                description: (c["description"]?.toString().isNotEmpty ?? false)
+                    ? c["description"]
+                    : "Consult a doctor for further evaluation.",
+                icon: Icons.warning_amber_rounded,
+              ),
+            ),
+          ],
+
+          if (symptomTests.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            sectionTitle("🧪 Recommended Tests"),
+            ...symptomTests.map(
+              (t) => infoCard(
+                title: t["name"] ?? "Medical Test",
+                description: (t["purpose"]?.toString().isNotEmpty ?? false)
+                    ? t["purpose"]
+                    : "Recommended based on this symptom.",
+                icon: Icons.science,
+              ),
+            ),
+          ],
+
+          const SizedBox(height: 28),
+        ],
+      );
+    });
   }
 
   Widget sectionTitle(String text) {
@@ -103,8 +144,8 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
         text,
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -125,7 +166,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.purple, size: 28),
+          Icon(icon, color: Colors.purple, size: 26),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

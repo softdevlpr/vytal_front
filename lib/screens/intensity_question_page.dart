@@ -13,6 +13,14 @@ class IntensityQuestionPage extends StatefulWidget {
 class _IntensityQuestionPageState extends State<IntensityQuestionPage> {
   final Map<String, int> intensityMap = {};
 
+  final Map<int, String> intensityMeaning = {
+    1: "Very Low",
+    2: "Low",
+    3: "Moderate",
+    4: "High",
+    5: "Very High",
+  };
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +49,8 @@ class _IntensityQuestionPageState extends State<IntensityQuestionPage> {
             Expanded(
               child: ListView(
                 children: widget.symptoms.map((symptom) {
+                  final selectedIntensity = intensityMap[symptom]!;
+
                   return Container(
                     margin: const EdgeInsets.only(bottom: 16),
                     padding: const EdgeInsets.all(16),
@@ -51,6 +61,7 @@ class _IntensityQuestionPageState extends State<IntensityQuestionPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        /// Symptom Title
                         Text(
                           symptom,
                           style: const TextStyle(
@@ -60,16 +71,16 @@ class _IntensityQuestionPageState extends State<IntensityQuestionPage> {
                           ),
                         ),
 
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 12),
 
+                        /// Slider
                         Slider(
-                          value: intensityMap[symptom]!.toDouble(),
+                          value: selectedIntensity.toDouble(),
                           min: 1,
                           max: 5,
                           divisions: 4,
                           activeColor: const Color(0xFF9D4EDD),
                           inactiveColor: Colors.white24,
-                          label: intensityMap[symptom].toString(),
                           onChanged: (value) {
                             setState(() {
                               intensityMap[symptom] = value.toInt();
@@ -77,9 +88,46 @@ class _IntensityQuestionPageState extends State<IntensityQuestionPage> {
                           },
                         ),
 
+                        /// Intensity Text
                         Text(
-                          "Intensity: ${intensityMap[symptom]} / 5",
+                          "Intensity: $selectedIntensity / 5 — ${intensityMeaning[selectedIntensity]}",
                           style: const TextStyle(color: Colors.white70),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        /// Intensity Meaning Guide
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: intensityMeaning.entries.map((entry) {
+                            final isSelected = entry.key == selectedIntensity;
+
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFF9D4EDD)
+                                    : Colors.white12,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                "${entry.key} • ${entry.value}",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.white70,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ],
                     ),
@@ -88,7 +136,7 @@ class _IntensityQuestionPageState extends State<IntensityQuestionPage> {
               ),
             ),
 
-            /// CONTINUE → RECOMMENDATION PAGE
+            /// CONTINUE BUTTON
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -101,8 +149,6 @@ class _IntensityQuestionPageState extends State<IntensityQuestionPage> {
                           "intensity": entry.value,
                         };
                       }).toList();
-
-                  print(symptomsWithIntensity); // debug
 
                   Navigator.push(
                     context,
