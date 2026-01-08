@@ -64,11 +64,10 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
     );
   }
 
-  /// 🔹 BUILD UI PER SYMPTOM (NO UNKNOWN)
+  /// 🔹 BUILD UI PER SYMPTOM (TESTS FIRST → CAUSES LATER)
   List<Widget> buildSymptomWiseSections() {
     final int symptomCount = widget.symptoms.length;
 
-    // Split causes & tests roughly per symptom
     final int causesPerSymptom = symptomCount == 0
         ? 0
         : (causes.length / symptomCount).ceil();
@@ -104,21 +103,8 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
 
           const SizedBox(height: 12),
 
-          if (symptomCauses.isNotEmpty) ...[
-            sectionTitle("🚨 Possible Causes"),
-            ...symptomCauses.map(
-              (c) => infoCard(
-                title: c["name"] ?? "Possible Cause",
-                description: (c["description"]?.toString().isNotEmpty ?? false)
-                    ? c["description"]
-                    : "Consult a doctor for further evaluation.",
-                icon: Icons.warning_amber_rounded,
-              ),
-            ),
-          ],
-
+          /// 🧪 TESTS FIRST
           if (symptomTests.isNotEmpty) ...[
-            const SizedBox(height: 16),
             sectionTitle("🧪 Recommended Tests"),
             ...symptomTests.map(
               (t) => infoCard(
@@ -127,6 +113,21 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
                     ? t["purpose"]
                     : "Recommended based on this symptom.",
                 icon: Icons.science,
+              ),
+            ),
+          ],
+
+          /// 🚨 CAUSES AFTER
+          if (symptomCauses.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            sectionTitle("🚨 Possible Causes"),
+            ...symptomCauses.map(
+              (c) => infoCard(
+                title: c["name"] ?? "Possible Cause",
+                description: (c["description"]?.toString().isNotEmpty ?? false)
+                    ? c["description"]
+                    : "Consult a doctor for further evaluation.",
+                icon: Icons.warning_amber_rounded,
               ),
             ),
           ],
